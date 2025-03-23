@@ -222,4 +222,18 @@ class ReactiveStartTest {
                 .verifyComplete();
     }
 
+    @Test
+    void map으로_메시지를_변환하기() {
+        Flux<String> animation = Flux
+                .just("짱구는 못말려", "철수는 못말려", "맹구는 못말려")
+                .map(n -> {
+                    String[] split = n.split(" ");
+                    return split[0];
+                });
+
+        StepVerifier.create(animation)
+                .expectNext("짱구는", "철수는", "맹구는")
+                .verifyComplete();
+    }
+
 }
