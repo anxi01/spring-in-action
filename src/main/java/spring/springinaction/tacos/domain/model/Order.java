@@ -23,6 +23,9 @@ public class Order implements Serializable {
 
     private Date placedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     private String deliveryName;
 
     private String deliveryStreet;
