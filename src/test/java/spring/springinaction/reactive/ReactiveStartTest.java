@@ -285,4 +285,23 @@ class ReactiveStartTest {
                 .verifyComplete();
     }
 
+    @Test
+    void 모든_항목이_조건을_충족하는지_검사하기() {
+        Flux<String> fruitFlux = Flux.just("Apple", "Orange", "Grape", "Strawberry");
+
+        Mono<Boolean> hasBMono = fruitFlux.all(a -> a.contains("e"));
+        StepVerifier.create(hasBMono)
+                .expectNext(true)
+                .verifyComplete();
+    }
+
+    @Test
+    void 일부_항목이_조건을_충족하는지_검사하기() {
+        Flux<String> fruitFlux = Flux.just("Apple", "Orange", "Grape", "Strawberry");
+
+        Mono<Boolean> hasAMono = fruitFlux.any(a -> a.contains("A"));
+        StepVerifier.create(hasAMono)
+                .expectNext(true)
+                .verifyComplete();
+    }
 }
