@@ -178,4 +178,48 @@ class ReactiveStartTest {
                 .verifyComplete();
     }
 
+    @Test
+    void 지정된_수의_메시지를_건너뛰기() {
+        Flux<String> skipFlux = Flux
+                .just("짱구", "철수", "맹구", "유리", "훈이")
+                .skip(3);
+
+        StepVerifier.create(skipFlux)
+                .expectNext("유리", "훈이")
+                .verifyComplete();
+    }
+
+    @Test
+    void 지정된_수의_메시지만_방출하기() {
+        Flux<String> favoriteCharacter = Flux
+                .just("짱구", "철수", "맹구", "유리", "훈이")
+                .take(3);
+
+        StepVerifier.create(favoriteCharacter)
+                .expectNext("짱구", "철수", "맹구")
+                .verifyComplete();
+    }
+
+    @Test
+    void 지정된_조건식의_메시지만_방출하기() {
+        Flux<String> favoriteCharacter = Flux
+                .just("짱구", "철수", "맹구", "유리", "훈이")
+                .filter(k -> !k.equals("훈이"));
+
+        StepVerifier.create(favoriteCharacter)
+                .expectNext("짱구", "철수", "맹구", "유리")
+                .verifyComplete();
+    }
+
+    @Test
+    void 중복되지_않는_메시지만_방출하기() {
+        Flux<String> duplicateFlux = Flux
+                .just("짱구", "철수", "맹구", "짱구", "철수")
+                .distinct();
+
+        StepVerifier.create(duplicateFlux)
+                .expectNext("짱구", "철수", "맹구")
+                .verifyComplete();
+    }
+
 }
