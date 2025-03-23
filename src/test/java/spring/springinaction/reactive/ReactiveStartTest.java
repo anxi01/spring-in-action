@@ -236,4 +236,53 @@ class ReactiveStartTest {
                 .verifyComplete();
     }
 
+    @Test
+    void 데이터를_버퍼링하기() {
+        Flux<String> fruitFlux = Flux.just("Apple", "Orange", "Grape", "Banana", "Strawberry");
+
+        Flux<List<String>> bufferedFlux = fruitFlux.buffer(3);
+
+        StepVerifier.create(bufferedFlux)
+                .expectNext(Arrays.asList("Apple", "Orange", "Grape"))
+                .expectNext(Arrays.asList("Banana", "Strawberry"))
+                .verifyComplete();
+    }
+
+    @Test
+    void 데이터를_병행으로_버퍼링하기() {
+        Flux.just("Apple", "Orange", "Grape", "Banana", "Strawberry")
+                .buffer(3)
+                .flatMap(x ->
+                        Flux.fromIterable(x)
+                                .map(String::toUpperCase)
+                                .subscribeOn(Schedulers.parallel())
+                                .log()
+                ).subscribe();
+    }
+
+    @Test
+    void 모든_항목을_리스트로_방출하기() {
+        Flux<String> fruitFlux = Flux.just("Apple", "Orange", "Grape", "Banana", "Strawberry");
+
+        Mono<List<String>> fruitListMono = fruitFlux.collectList();
+
+        StepVerifier.create(fruitListMono)
+                .expectNext(Arrays.asList("Apple", "Orange", "Grape", "Banana", "Strawberry"))
+                .verifyComplete();
+    }
+
+    @Test
+    void 모든_항목을_맵으로_방출하기() {
+        Flux<String> fruitFlux = Flux.just("Apple", "Orange", "Grape", "Orange", "Grape");
+
+        Mono<Map<Character, String>> fruitMapMono = fruitFlux.collectMap(a -> a.charAt(0));
+
+        StepVerifier.create(fruitMapMono)
+                .expectNextMatches(map -> map.size() == 3 &&
+                        map.get('A').equals("Apple") &&
+                        map.get('O').equals("Orange") &&
+                        map.get('G').equals("Grape"))
+                .verifyComplete();
+    }
+
 }
