@@ -16,3 +16,8 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: create
+
+jwt:
+  issuer: test-issuer
+  secret: test-secret
+  accessTokenExpirySeconds: 60
