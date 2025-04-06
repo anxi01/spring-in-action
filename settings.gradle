@@ -1,1 +1,3 @@
 rootProject.name = 'spring-in-action'
+include("mvc")
+include("webflux")
