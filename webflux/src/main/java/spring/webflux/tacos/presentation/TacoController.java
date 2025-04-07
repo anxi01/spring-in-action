@@ -11,7 +11,7 @@ import spring.webflux.tacos.domain.repository.TacoRepository;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(produces = "application/json")
+@RequestMapping(value = "/tacos", produces = "application/json")
 @RequiredArgsConstructor
 public class TacoController {
 
@@ -33,7 +33,7 @@ public class TacoController {
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Taco> postTaco(@RequestBody Mono<Taco> tacoMono) {
-        return tacoRepository.saveAll(tacoMono).next();
+        return tacoRepository.save(tacoMono);
     }
 
 }
