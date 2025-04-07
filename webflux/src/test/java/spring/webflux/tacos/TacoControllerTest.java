@@ -2,8 +2,10 @@ package spring.webflux.tacos;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import spring.webflux.tacos.domain.model.Ingredient;
 import spring.webflux.tacos.domain.model.Taco;
 import spring.webflux.tacos.presentation.TacoController;
@@ -32,7 +34,8 @@ public class TacoControllerTest {
                 new TacoController(tacoRepository)
         ).build();
 
-        testClient.get().uri("/recent")
+        testClient.get()
+                .uri("/tacos/recent")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -42,6 +45,32 @@ public class TacoControllerTest {
                 .jsonPath("$[0].name").isEqualTo(tacos[0].getName())
                 .jsonPath("$[1].id").isEqualTo(tacos[1].getId().toString())
                 .jsonPath("$[1].name").isEqualTo(tacos[1].getName());
+    }
+
+    @Test
+    public void 타코를_저장한다() {
+        TacoRepository tacoRepository = Mockito.mock(TacoRepository.class);
+        Mono<Taco> unsavedTacoMono = Mono.just(testTaco(null));
+
+        Taco savedTaco = testTaco(null);
+        UUID uuid = UUID.randomUUID();
+        savedTaco.setId(uuid);
+        Mono<Taco> savedTacoMono = Mono.just(savedTaco);
+
+        Mockito.when(tacoRepository.save(Mockito.any())).thenReturn(savedTacoMono);
+
+        WebTestClient testClient = WebTestClient.bindToController(
+                new TacoController(tacoRepository)
+        ).build();
+
+        testClient.post()
+                .uri("/tacos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(unsavedTacoMono, Taco.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Taco.class)
+                .isEqualTo(savedTaco);
     }
 
     private Taco testTaco(Long number) {

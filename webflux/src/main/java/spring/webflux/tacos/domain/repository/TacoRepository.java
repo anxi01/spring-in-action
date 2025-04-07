@@ -12,5 +12,6 @@ public interface TacoRepository {
 
     Flux<Taco> findAll();
     Mono<Taco> findById(UUID id);
+    Mono<Taco> save(Mono<Taco> taco);
     Flux<Taco> saveAll(Mono<Taco> taco);
 }
